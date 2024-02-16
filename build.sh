@@ -2,9 +2,10 @@
 
 #set -e
 
-KERNEL_DEFCONFIG=alioth_defconfig
-ANYKERNEL3_DIR=$PWD/AnyKernel3/
-FINAL_KERNEL_ZIP=InfiniR_Alioth_v2.88.zip
+K_ROOT_DIR=$(pwd)
+KERNEL_DEFCONFIG=alioth_nethunter_defconfig
+ANYKERNEL3_DIR=$K_ROOT_DIR/AnyKernel3/
+FINAL_KERNEL_ZIP=Bifr0st_Alioth_1.0.zip
 export ARCH=arm64
 
 # Speed up build process
@@ -27,14 +28,14 @@ echo -e "***********************************************$nocol"
 make $KERNEL_DEFCONFIG O=out
 make -j$(nproc --all) O=out \
                       ARCH=arm64 \
-                      CC=/home/raystef66/kernel/prebuilts/clang-r445002/bin/clang \
+                      CC=$K_ROOT_DIR/../../android/toolchains/prebuilts_clang-r445002/bin/clang \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
-                      CROSS_COMPILE=/home/raystef66/kernel/prebuilts/aarch64-linux-android-4.9/bin/aarch64-linux-android- \
-                      CROSS_COMPILE_ARM32=/home/raystef66/kernel/prebuilts/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
+                      CROSS_COMPILE=$K_ROOT_DIR/../../android/toolchains/aarch64-linux-android-4.9/bin/aarch64-linux-android- \
+                      CROSS_COMPILE_ARM32=$K_ROOT_DIR/../../android/toolchains/arm-linux-androideabi-4.9/bin/arm-linux-androideabi-
 
 echo -e "$yellow**** Verify Image.gz-dtb & dtbo.img ****$nocol"
-ls $PWD/out/arch/arm64/boot/Image.gz-dtb
-ls $PWD/out/arch/arm64/boot/dtbo.img
+ls $K_ROOT_DIR/out/arch/arm64/boot/Image.gz-dtb
+ls $K_ROOT_DIR/out/arch/arm64/boot/dtbo.img
 
 echo -e "$yellow**** Verifying AnyKernel3 Directory ****$nocol"
 ls $ANYKERNEL3_DIR
@@ -44,13 +45,13 @@ rm -rf $ANYKERNEL3_DIR/dtbo.img
 rm -rf $ANYKERNEL3_DIR/$FINAL_KERNEL_ZIP
 
 echo -e "$yellow**** Copying Image.gz-dtb & dtbo.img ****$nocol"
-cp $PWD/out/arch/arm64/boot/Image.gz-dtb $ANYKERNEL3_DIR/
-cp $PWD/out/arch/arm64/boot/dtbo.img $ANYKERNEL3_DIR/
+cp $K_ROOT_DIR/out/arch/arm64/boot/Image.gz-dtb $ANYKERNEL3_DIR/
+cp $K_ROOT_DIR/out/arch/arm64/boot/dtbo.img $ANYKERNEL3_DIR/
 
 echo -e "$yellow**** Time to zip up! ****$nocol"
 cd $ANYKERNEL3_DIR/
 zip -r9 $FINAL_KERNEL_ZIP * -x README $FINAL_KERNEL_ZIP
-cp $ANYKERNEL3_DIR/$FINAL_KERNEL_ZIP /home/raystef66/kernel/$FINAL_KERNEL_ZIP
+cp $ANYKERNEL3_DIR/$FINAL_KERNEL_ZIP $K_ROOT_DIR/../../android/$FINAL_KERNEL_ZIP
 
 echo -e "$yellow**** Done, here is your checksum ****$nocol"
 cd ..
@@ -62,4 +63,4 @@ rm -rf out/
 BUILD_END=$(date +"%s")
 DIFF=$(($BUILD_END - $BUILD_START))
 echo -e "$yellow Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nocol"
-sha1sum $KERNELDIR/$FINAL_KERNEL_ZIP
+sha1sum $K_ROOT_DIR/../../android/$FINAL_KERNEL_ZIP
