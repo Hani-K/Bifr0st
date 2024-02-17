@@ -6,8 +6,8 @@
 properties() { '
 kernel.string=Bifr0st Kernel by Hani K.
 do.devicecheck=1
-do.modules=0
-do.systemless=1
+do.modules=1
+do.systemless=0 #Never use this for NetHunter kernels as it prevents us from writing to /lib/modules
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=alioth
